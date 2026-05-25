@@ -67,7 +67,18 @@ jobs:
           fi
           echo "dated_tag=${DATED_TAG}" >> $GITHUB_OUTPUT
 
+      - name: Check if image exists
+        id: check-image
+        run: |
+          TAG="ghcr.io/${{ github.repository }}:${{ needs.get-version.outputs.version }}-${{ steps.dated-tag.outputs.dated_tag }}"
+          if docker buildx imagetools inspect "$TAG" > /dev/null 2>&1; then
+            echo "exists=true" >> $GITHUB_OUTPUT
+          else
+            echo "exists=false" >> $GITHUB_OUTPUT
+          fi
+
       - name: Build and push
+        if: steps.check-image.outputs.exists == 'false'
         uses: docker/build-push-action@v6
         with:
           context: ./debian
