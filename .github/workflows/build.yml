@@ -52,6 +52,21 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Get dated tag
+        id: dated-tag
+        run: |
+          BASE_TAG="${{ matrix.base }}${{ matrix.variant }}"
+          DIGEST=$(curl -s "https://hub.docker.com/v2/repositories/library/debian/tags/${BASE_TAG}" | jq -r .digest)
+          DATED_TAG=$(curl -s "https://hub.docker.com/v2/repositories/library/debian/tags/?page_size=100" | \
+            jq -r --arg DIGEST "$DIGEST" '.results[] | select(.digest == $DIGEST) | .name' | \
+            grep -E "^${{ matrix.base }}-[0-9]{8}${{ matrix.variant }}$" | head -n 1)
+
+          if [ -z "$DATED_TAG" ]; then
+            echo "Could not find dated tag for ${BASE_TAG}, falling back to ${BASE_TAG}"
+            DATED_TAG="${BASE_TAG}"
+          fi
+          echo "dated_tag=${DATED_TAG}" >> $GITHUB_OUTPUT
+
       - name: Build and push
         uses: docker/build-push-action@v6
         with:
@@ -65,3 +80,5 @@ jobs:
           tags: |
             ghcr.io/${{ github.repository }}:${{ matrix.base }}${{ matrix.variant }}
             ghcr.io/${{ github.repository }}:${{ needs.get-version.outputs.version }}-${{ matrix.base }}${{ matrix.variant }}
+            ghcr.io/${{ github.repository }}:${{ steps.dated-tag.outputs.dated_tag }}
+            ghcr.io/${{ github.repository }}:${{ needs.get-version.outputs.version }}-${{ steps.dated-tag.outputs.dated_tag }}
