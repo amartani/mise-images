@@ -1,0 +1,67 @@
+name: Build and Push Images
+
+on:
+  workflow_dispatch:
+    inputs:
+      mise_version:
+        description: 'Mise version to build (defaults to latest)'
+        required: false
+        default: 'latest'
+
+jobs:
+  get-version:
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.set-version.outputs.version }}
+    steps:
+      - id: set-version
+        run: |
+          if [ "${{ github.event.inputs.mise_version }}" = "latest" ]; then
+            VERSION=$(curl -s https://api.github.com/repos/jdx/mise/releases/latest | jq -r .tag_name | sed 's/^v//')
+          else
+            VERSION=${{ github.event.inputs.mise_version }}
+          fi
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+
+  build:
+    needs: get-version
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        base: [forky, trixie, bookworm, sid]
+        variant: ["", "-slim"]
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Login to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push
+        uses: docker/build-push-action@v6
+        with:
+          context: ./debian
+          file: ./debian/Dockerfile
+          push: true
+          platforms: linux/amd64,linux/arm64
+          build-args: |
+            BASE_IMAGE=debian:${{ matrix.base }}${{ matrix.variant }}
+            MISE_VERSION=${{ needs.get-version.outputs.version }}
+          tags: |
+            ghcr.io/${{ github.repository }}:${{ matrix.base }}${{ matrix.variant }}
+            ghcr.io/${{ github.repository }}:${{ matrix.base }}${{ matrix.variant }}-${{ needs.get-version.outputs.version }}
