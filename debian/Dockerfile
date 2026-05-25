@@ -11,5 +11,5 @@ RUN savedAptMark="$(apt-mark showmanual)" && \
     apt-get update && apt-get install -y mise=${MISE_VERSION} && \
     apt-mark manual $savedAptMark mise && \
     apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false && \
-    apt-get dist-clean && \
+    rm -rf /var/lib/apt/lists/* && \
     mise --version
