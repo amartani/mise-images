@@ -4,9 +4,9 @@ on:
   workflow_dispatch:
     inputs:
       mise_version:
-        description: 'Mise version to build (defaults to latest)'
+        description: "Mise version to build (defaults to latest)"
         required: false
-        default: 'latest'
+        default: "latest"
 
 jobs:
   get-version:
@@ -64,4 +64,4 @@ jobs:
             MISE_VERSION=${{ needs.get-version.outputs.version }}
           tags: |
             ghcr.io/${{ github.repository }}:${{ matrix.base }}${{ matrix.variant }}
-            ghcr.io/${{ github.repository }}:${{ matrix.base }}${{ matrix.variant }}-${{ needs.get-version.outputs.version }}
+            ghcr.io/${{ github.repository }}:${{ needs.get-version.outputs.version }}-${{ matrix.base }}${{ matrix.variant }}
