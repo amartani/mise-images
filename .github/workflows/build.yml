@@ -7,6 +7,11 @@ on:
         description: "Mise version to build (defaults to latest)"
         required: false
         default: "latest"
+      force:
+        description: "Force build even if image exists"
+        required: false
+        type: boolean
+        default: false
   schedule:
     - cron: "0 * * * *"
 
@@ -86,7 +91,7 @@ jobs:
           fi
 
       - name: Build and push
-        if: steps.check-image.outputs.exists == 'false'
+        if: github.event.inputs.force == 'true' || steps.check-image.outputs.exists == 'false'
         uses: docker/build-push-action@v6
         with:
           context: ./debian
