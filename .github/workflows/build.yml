@@ -100,7 +100,7 @@ jobs:
           amartani/mise:${VERSION}-${DATED_TAG}
           EOF
 
-          if [ "$BASE" = "bookworm" ]; then
+          if [ "$BASE" = "trixie" ]; then
             echo "ghcr.io/${{ github.repository }}:latest${VARIANT}" >> tags.txt
             echo "ghcr.io/${{ github.repository }}:${VERSION}${VARIANT}" >> tags.txt
             echo "amartani/mise:latest${VARIANT}" >> tags.txt
