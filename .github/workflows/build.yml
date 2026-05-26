@@ -80,6 +80,39 @@ jobs:
           fi
           echo "dated_tag=${DATED_TAG}" >> $GITHUB_OUTPUT
 
+      - name: Generate tags
+        id: tags
+        run: |
+          VERSION="${{ needs.get-version.outputs.version }}"
+          BASE="${{ matrix.base }}"
+          VARIANT="${{ matrix.variant }}"
+          DATED_TAG="${{ steps.dated-tag.outputs.dated_tag }}"
+
+          # Use a heredoc to build the tags list
+          cat <<EOF > tags.txt
+          ghcr.io/${{ github.repository }}:${BASE}${VARIANT}
+          ghcr.io/${{ github.repository }}:${VERSION}-${BASE}${VARIANT}
+          ghcr.io/${{ github.repository }}:${DATED_TAG}
+          ghcr.io/${{ github.repository }}:${VERSION}-${DATED_TAG}
+          amartani/mise:${BASE}${VARIANT}
+          amartani/mise:${VERSION}-${BASE}${VARIANT}
+          amartani/mise:${DATED_TAG}
+          amartani/mise:${VERSION}-${DATED_TAG}
+          EOF
+
+          if [ "$BASE" = "bookworm" ]; then
+            echo "ghcr.io/${{ github.repository }}:latest${VARIANT}" >> tags.txt
+            echo "ghcr.io/${{ github.repository }}:${VERSION}${VARIANT}" >> tags.txt
+            echo "amartani/mise:latest${VARIANT}" >> tags.txt
+            echo "amartani/mise:${VERSION}${VARIANT}" >> tags.txt
+          fi
+
+          {
+            echo 'tags<<EOF'
+            cat tags.txt
+            echo 'EOF'
+          } >> "$GITHUB_OUTPUT"
+
       - name: Check if image exists
         id: check-image
         run: |
@@ -101,12 +134,4 @@ jobs:
           build-args: |
             BASE_IMAGE=debian:${{ matrix.base }}${{ matrix.variant }}
             MISE_VERSION=${{ needs.get-version.outputs.version }}
-          tags: |
-            ghcr.io/${{ github.repository }}:${{ matrix.base }}${{ matrix.variant }}
-            ghcr.io/${{ github.repository }}:${{ needs.get-version.outputs.version }}-${{ matrix.base }}${{ matrix.variant }}
-            ghcr.io/${{ github.repository }}:${{ steps.dated-tag.outputs.dated_tag }}
-            ghcr.io/${{ github.repository }}:${{ needs.get-version.outputs.version }}-${{ steps.dated-tag.outputs.dated_tag }}
-            amartani/mise:${{ matrix.base }}${{ matrix.variant }}
-            amartani/mise:${{ needs.get-version.outputs.version }}-${{ matrix.base }}${{ matrix.variant }}
-            amartani/mise:${{ steps.dated-tag.outputs.dated_tag }}
-            amartani/mise:${{ needs.get-version.outputs.version }}-${{ steps.dated-tag.outputs.dated_tag }}
+          tags: ${{ steps.tags.outputs.tags }}
