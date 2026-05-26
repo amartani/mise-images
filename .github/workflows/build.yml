@@ -7,6 +7,8 @@ on:
         description: "Mise version to build (defaults to latest)"
         required: false
         default: "latest"
+  schedule:
+    - cron: "0 * * * *"
 
 jobs:
   get-version:
@@ -16,7 +18,7 @@ jobs:
     steps:
       - id: set-version
         run: |
-          if [ "${{ github.event.inputs.mise_version }}" = "latest" ]; then
+          if [ "${{ github.event.inputs.mise_version }}" = "latest" ] || [ -z "${{ github.event.inputs.mise_version }}" ]; then
             VERSION=$(curl -s https://api.github.com/repos/jdx/mise/releases/latest | jq -r .tag_name | sed 's/^v//')
           else
             VERSION=${{ github.event.inputs.mise_version }}
