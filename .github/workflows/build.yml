@@ -37,7 +37,7 @@ jobs:
       fail-fast: false
       matrix:
         base: [forky, trixie, bookworm, sid]
-        variant: ["", "-slim"]
+        variant: ["", "-slim", "-buildpack", "-buildpack-curl", "-buildpack-scm"]
     permissions:
       contents: read
       packages: write
@@ -68,17 +68,33 @@ jobs:
       - name: Get dated tag
         id: dated-tag
         run: |
-          BASE_TAG="${{ matrix.base }}${{ matrix.variant }}"
-          DIGEST=$(curl -s "https://hub.docker.com/v2/repositories/library/debian/tags/${BASE_TAG}" | jq -r .digest)
-          DATED_TAG=$(curl -s "https://hub.docker.com/v2/repositories/library/debian/tags/?page_size=100" | \
-            jq -r --arg DIGEST "$DIGEST" '.results[] | select(.digest == $DIGEST) | .name' | \
-            grep -E "^${{ matrix.base }}-[0-9]{8}${{ matrix.variant }}$" | head -n 1)
-
-          if [ -z "$DATED_TAG" ]; then
-            echo "Could not find dated tag for ${BASE_TAG}, falling back to ${BASE_TAG}"
-            DATED_TAG="${BASE_TAG}"
+          BASE="${{ matrix.base }}"
+          VARIANT="${{ matrix.variant }}"
+          if [[ "$VARIANT" == -buildpack* ]]; then
+            REPO_NAME="buildpack-deps"
+            UPSTREAM_VARIANT=$(echo "$VARIANT" | sed 's/-buildpack//')
+          else
+            REPO_NAME="debian"
+            UPSTREAM_VARIANT="$VARIANT"
           fi
-          echo "dated_tag=${DATED_TAG}" >> $GITHUB_OUTPUT
+          UPSTREAM_TAG="${BASE}${UPSTREAM_VARIANT}"
+
+          DIGEST=$(curl -s "https://hub.docker.com/v2/repositories/library/${REPO_NAME}/tags/${UPSTREAM_TAG}" | jq -r .digest)
+          DATED_VERSION=$(curl -s "https://hub.docker.com/v2/repositories/library/${REPO_NAME}/tags/?page_size=100" | \
+            jq -r --arg DIGEST "$DIGEST" '.results[] | select(.digest == $DIGEST) | .name' | \
+            grep -E "^${BASE}-[0-9]{8}${UPSTREAM_VARIANT}$" | sed -E "s/^${BASE}-([0-9]{8})${UPSTREAM_VARIANT}$/\1/" | head -n 1)
+
+          if [ -n "$DATED_VERSION" ]; then
+            MISE_DATED_TAG="${BASE}-${DATED_VERSION}${VARIANT}"
+            UPSTREAM_DATED_TAG="${BASE}-${DATED_VERSION}${UPSTREAM_VARIANT}"
+          else
+            echo "Could not find dated tag for ${REPO_NAME}:${UPSTREAM_TAG}, falling back"
+            MISE_DATED_TAG="${BASE}${VARIANT}"
+            UPSTREAM_DATED_TAG="${UPSTREAM_TAG}"
+          fi
+
+          echo "dated_tag=${MISE_DATED_TAG}" >> $GITHUB_OUTPUT
+          echo "upstream_image=${REPO_NAME}:${UPSTREAM_DATED_TAG}" >> $GITHUB_OUTPUT
 
       - name: Generate tags
         id: tags
@@ -132,6 +148,6 @@ jobs:
           push: true
           platforms: linux/amd64,linux/arm64
           build-args: |
-            BASE_IMAGE=debian:${{ matrix.base }}${{ matrix.variant }}
+            BASE_IMAGE=${{ steps.dated-tag.outputs.upstream_image }}
             MISE_VERSION=${{ needs.get-version.outputs.version }}
           tags: ${{ steps.tags.outputs.tags }}

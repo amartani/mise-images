@@ -28,14 +28,17 @@ RUN mise use -g node@20
 
 The images are built using Debian as the base OS. The following Debian versions are supported:
 
-- `bookworm` (Old Stable)
-- `trixie` (Stable)
-- `forky` (Testing)
+- `bookworm` (Stable)
+- `trixie` (Testing)
+- `forky` (Not yet released)
 - `sid` (Unstable)
 
-Each version is available in two variants:
+Each version is available in several variants:
 - **Default:** Standard Debian base.
 - **-slim:** A smaller image based on Debian's slim variant.
+- **-buildpack:** Based on [`buildpack-deps`](https://hub.docker.com/_/buildpack-deps), which includes many development headers and libraries.
+- **-buildpack-curl:** Based on `buildpack-deps:<codename>-curl`, includes `curl` and `ca-certificates`.
+- **-buildpack-scm:** Based on `buildpack-deps:<codename>-scm`, includes `curl`, `ca-certificates`, and SCM tools like `git` and `mercurial`.
 
 ### Tag Formats
 
