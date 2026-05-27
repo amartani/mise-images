@@ -154,3 +154,18 @@ jobs:
             BASE_IMAGE=${{ steps.dated-tag.outputs.upstream_image }}
             MISE_VERSION=${{ needs.get-version.outputs.version }}
           tags: ${{ steps.tags.outputs.tags }}
+
+  update-dockerhub-description:
+    needs: build
+    runs-on: ubuntu-latest
+    if: github.event_name != 'pull_request'
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Docker Hub Description
+        uses: peter-evans/dockerhub-description@v4
+        with:
+          username: ${{ vars.DOCKERHUB_USER }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+          repository: amartani/mise
