@@ -149,6 +149,7 @@ jobs:
           context: ./debian
           file: ./debian/Dockerfile
           push: ${{ github.event_name != 'pull_request' }}
+          # These are the platforms supported by the mise apt repository
           platforms: linux/amd64,linux/arm64
           build-args: |
             BASE_IMAGE=${{ steps.dated-tag.outputs.upstream_image }}

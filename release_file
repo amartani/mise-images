@@ -1,0 +1,24 @@
+Origin: mise repository
+Label: mise
+Suite: stable
+Codename: stable
+Version: 1.0
+Architectures: amd64 arm64
+Components: main
+Description: https://github.com/jdx/mise
+Date: Sat, 23 May 2026 10:53:49 +0000
+MD5Sum:
+ 60fea0d240568ef3578c24cac8990031 481 main/binary-arm64/Packages
+ a7711afcb06480984b7416bd9d15fc74 374 main/binary-arm64/Packages.gz
+ 6e7b7f255f40696716d0276525edecf1 481 main/binary-amd64/Packages
+ 933b656418eebc1c77435a996ece52b8 372 main/binary-amd64/Packages.gz
+SHA1:
+ db13c8843a1f1c0a8629dabbdcdcc6fd153d3b40 481 main/binary-arm64/Packages
+ c7619bc47df91e463d59f8196951aea7484cadf9 374 main/binary-arm64/Packages.gz
+ 1cffaef1d5c8810430f2992a37237264324508ca 481 main/binary-amd64/Packages
+ 2219d8a3055b1318f1e67f651d8473941ce5689d 372 main/binary-amd64/Packages.gz
+SHA256:
+ fa8eac04cae359883fcc9642c628a6e7b38c87d8b090c5b48e6ff89f71c53072 481 main/binary-arm64/Packages
+ c2e52104e75614ae84832361418807107ab4c352242e25e16a64fec06d4d8f9b 374 main/binary-arm64/Packages.gz
+ 18c23db613eac158410b8052fedd9444f37431870d7d607d021ecaa5fb6fcfdb 481 main/binary-amd64/Packages
+ e0b7d71829bc8b208d32936e2c7e578722fddb1c593ae736b52d630b1523763b 372 main/binary-amd64/Packages.gz

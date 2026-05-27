@@ -24,13 +24,21 @@ FROM amartani/mise:bookworm-slim
 RUN mise use -g node@20
 ```
 
+## Supported Platforms
+
+The images are available for the following architectures:
+- `amd64` (x86_64)
+- `arm64` (AArch64)
+
+These are the platforms supported by the upstream `mise` apt repository.
+
 ## Supported Tags
 
 The images are built using Debian as the base OS. The following Debian versions are supported:
 
-- `bookworm` (Old Stable)
-- `trixie` (Stable)
-- `forky` (Testing)
+- `bookworm` (Stable)
+- `trixie` (Testing)
+- `forky` (Experimental)
 - `sid` (Unstable)
 
 Each version is available in several variants:
