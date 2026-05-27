@@ -28,9 +28,9 @@ RUN mise use -g node@20
 
 The images are built using Debian as the base OS. The following Debian versions are supported:
 
-- `bookworm` (Stable)
-- `trixie` (Testing)
-- `forky` (Not yet released)
+- `bookworm` (Old Stable)
+- `trixie` (Stable)
+- `forky` (Testing)
 - `sid` (Unstable)
 
 Each version is available in several variants:
