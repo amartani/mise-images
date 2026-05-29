@@ -14,13 +14,13 @@ The images are available on both GitHub Container Registry (GHCR) and Docker Hub
 You can use these images as a base for your own Dockerfiles or run them directly:
 
 ```bash
-docker run amartani/mise:bookworm mise exec python@3.12 -- python -c 'print("hello world")'
+docker run amartani/mise:trixie mise exec python@3.12 -- python -c 'print("hello world")'
 ```
 
 Or in a Dockerfile:
 
 ```dockerfile
-FROM amartani/mise:bookworm-slim
+FROM amartani/mise:trixie-slim
 RUN mise use -g node@20
 ```
 
@@ -42,7 +42,7 @@ Each version is available in several variants:
 
 ### Tag Formats
 
-- `<debian-codename>[-slim]` (e.g., `bookworm`, `bookworm-slim`) - Points to the latest `mise` version.
-- `<mise-version>-<debian-codename>[-slim]` (e.g., `2024.5.1-bookworm`) - Points to a specific `mise` version.
-- `<debian-codename>-<date>[-slim]` (e.g., `bookworm-20240525`) - Points to a specific Debian image snapshot.
-- `<mise-version>-<debian-codename>-<date>[-slim]`
+- `<debian-codename>[-variant]` (e.g., `trixie`, `trixie-slim`, `trixie-buildpack`) - Points to the latest `mise` version.
+- `<mise-version>-<debian-codename>[-variant]` (e.g., `2024.5.1-trixie`) - Points to a specific `mise` version.
+- `<debian-codename>-<date>[-variant]` (e.g., `trixie-20240525`) - Points to a specific Debian image snapshot.
+- `<mise-version>-<debian-codename>-<date>[-variant]`
