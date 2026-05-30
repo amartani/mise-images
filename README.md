@@ -44,5 +44,4 @@ Each version is available in several variants:
 
 - `<debian-codename>[-variant]` (e.g., `trixie`, `trixie-slim`, `trixie-buildpack`) - Points to the latest `mise` version.
 - `<mise-version>-<debian-codename>[-variant]` (e.g., `2024.5.1-trixie`) - Points to a specific `mise` version.
-- `<debian-codename>-<date>[-variant]` (e.g., `trixie-20240525`) - Points to a specific Debian image snapshot.
-- `<mise-version>-<debian-codename>-<date>[-variant]`
+- `<mise-version>-<debian-codename>-<date>[-variant]` (e.g., `2024.5.1-trixie-20240525`) - Points to a specific `mise` version and a specific Debian image snapshot.

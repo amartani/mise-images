@@ -111,11 +111,9 @@ jobs:
           cat <<EOF > tags.txt
           ghcr.io/${{ github.repository }}:${BASE}${VARIANT}
           ghcr.io/${{ github.repository }}:${VERSION}-${BASE}${VARIANT}
-          ghcr.io/${{ github.repository }}:${DATED_TAG}
           ghcr.io/${{ github.repository }}:${VERSION}-${DATED_TAG}
           amartani/mise:${BASE}${VARIANT}
           amartani/mise:${VERSION}-${BASE}${VARIANT}
-          amartani/mise:${DATED_TAG}
           amartani/mise:${VERSION}-${DATED_TAG}
           EOF
 
